@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>放大镜的组件</title>
+    <style type="text/css">
+    *{
+      margin: 0;padding: 0;
+    }
+    .divLit{width: 380px;height: 238px; border: 1px solid #ddd;position: relative;z-index: 11;}
+    .divBig{width: 380px;height: 238px; border: 1px solid #ddd;position: relative;overflow: hidden;display: none;}
+    .picLit{width: 380px;height: 238px;z-index: 11;}
+    .picBig{width: 1920px;height: 1200px;position: absolute;left: 0;top: 0;}
+    .box{width:80px; height: 80px;position: absolute;background-color:rgba(0,0,255,.5);top:0;left:0;z-index:99;display: none;}
+    </style>
+  </head>
+  <body>
+    <div class="divLit"><img class="picLit" src="./picLit.jpg"/><div class="box"></div></div>
+    <div class="divBig"><img class="picBig" src="./picBig.jpg"></div>
+
+    <script>
+    // // 参数
+    // {
+    //       "picBig":"picBig",
+    //       "picLit":"picLit",
+    // }
+    // //方法
+    // function(){
+    //
+    // }
+    // //事件
+    //  var onMouseOver = function(){}
+    function move(picBig, divLit ,box, divBig){
+        var pic ={
+              // "divBig":divBig,//大图框元素
+              "picBig":picBig,//大图元素
+              "divLit":divLit,//小图框元素
+              "box":box,//遮罩层元素
+              "divBig":divBig
+        };
+        // onmouseover
+        pic.divLit.onmouseover = function(e){
+          pic.box.style.display = 'block';
+          pic.divBig.style.display = 'block';
+          e.stopPropagation()
+        }
+        //鼠标移动的时候
+        pic.divLit.onmousemove = function(e){
+            e = e || window.e;
+            e.clientX;//鼠标的x坐标
+            e.clientY;//鼠标的y坐标
+            var scrollTop =  document.documentElement.scrollTop || document.body.scrollTop;
+            var scrollLeft =  document.documentElement.scrollLeft || document.body.scrollLeft;
+            var divY = pic.divLit.offsetTop;
+            var divX = pic.divLit.offsetLeft;
+            pic.box.style.left = e.clientX - scrollLeft - divX - pic.box.offsetWidth/2 +'px';
+            pic.box.style.top = e.clientY - scrollTop - divY - pic.box.offsetHeight/2 +'px';
+            if(e.clientX < (divX + scrollLeft + pic.divLit.offsetWidth) && e.clientX > (scrollLeft + divX) && e.clientY < (divY + scrollTop + pic.divLit.offsetHeight) && e.clientY > (scrollTop + divY)){
+                pic.box.style.display = 'block';
+                pic.divBig.style.display = 'block';
+            }else{
+                pic.box.style.display = 'none';
+                pic.divBig.style.display = 'none';
+            }
+            var X = (e.clientX - scrollLeft - divX)*pic.picBig.offsetWidth/pic.divLit.offsetWidth;
+            var Y = (e.clientY - scrollTop - divY)*pic.picBig.offsetHeight/pic.divLit.offsetHeight;
+            if(X<0){
+              X ='0px';
+            }
+            if(X > pic.picBig.offsetWidth - pic.divBig.offsetWidth ){
+              X = pic.picBig.offsetWidth - pic.divBig.offsetWidth;
+            }
+            if(Y<0){
+              Y ='0px';
+            }
+            if(Y > pic.picBig.offsetHeight - pic.divBig.offsetHeight ){
+              Y = pic.picBig.offsetHeight - pic.divBig.offsetHeight;
+            }
+            pic.picBig.style.left = -X + 'px';
+            pic.picBig.style.top = -Y + 'px';
+            e.stopPropagation();
+        };
+        pic.divLit.onmouseout = function(e){
+          e = e || window.e;
+          pic.box.style.display = 'none';
+          pic.divBig.style.display = 'none';
+          e.stopPropagation()
+        }
+    };
+    var aPicBig =  document.querySelector('.picBig');
+    var aDivLit = document.querySelector('.divLit');
+    var aBox = document.querySelector('.box');
+    var aDivBig = document.querySelector('.divBig');
+    move(aPicBig , aDivLit, aBox, aDivBig);
+    </script>
+  </body>
+</html>
